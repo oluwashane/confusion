@@ -1,15 +1,50 @@
 import * as ActionType from "./ActionType";
 import { baseUrl } from '../shared/baseUrl'
+import axios from 'axios'
 
-export const addComment = (dishId, author, rating, comment) => ({
+export const addComment = (comment) => ({
     type: ActionType.ADD_COMMENT,
-    payload: {
-        dishId,
-        author,
-        rating,
-        comment
-    }
+    payload: comment
 })
+
+export const postComment = (dishId, author, rating, comment) => (dispatch) => {
+
+    let newComment = {
+        dishId,
+        rating,
+        comment,
+        author
+    }
+    newComment.date = new Date().toISOString();
+    console.log(newComment)
+    const url = baseUrl + 'comments'
+    axios.post(url, newComment)
+    .then(response => dispatch(addComment(response.data)))
+    .catch(err => console.log(err))
+    // fetch("http://localhost:3001/comments", {
+    //     method: 'POST',
+    //     header: {
+    //         "Content-Type":"application/json" 
+    //     },
+    //     body: JSON.stringify(newComment),
+    // })
+    // .then(response => {
+    //     console.log(response)
+    //     // if (response.ok) {
+    //     //     return response;
+    //     // } else {
+    //     //     const error = new Error("Error" + response.status + ": " + response.statusText)
+    //     //     error.response = response;
+    //     //     throw error;
+    //     // }
+    // }, error => {
+    //     const errMess = new Error(error.message);
+    //     throw errMess
+    // })
+    // .then(response => console.log(response.json()))
+    // .then(response => console.log(response))
+    // .catch(err => { console.log("Post comments ", err.message); alert("your comment could not be posted \nError: "+ err.message)})
+}
 
 export const fetchDishes = () => (dispatch) => {
     dispatch(dishesLoading(true));
@@ -109,3 +144,40 @@ export const promotionsFailed = (errorMessage) => ({
     type: ActionType.PROMOS_FAILED,
     payload: errorMessage
 }) 
+
+// Leaders Section
+
+export const leadersLoading = () => ({
+    type: ActionType.LEADERS_LOADING
+})
+
+export const fetchLeaders = () => (dispatch) => {
+    dispatch(leadersLoading(true))
+
+    fetch(baseUrl + "leaders")
+        .then(response => {
+            if (response.ok) {
+                return response
+            } else {
+                const errMess = new Error("Error " + response.status + ": " + response.statusText)
+                errMess.response = response;
+                return errMess
+            }
+        }, error => {
+            const err = new Error(error.message)
+            throw err
+        })
+        .then(response => response.json())
+        .then(leaders => dispatch(addLeaders(leaders)))
+        .catch(err => dispatch(leadersFailed(err)))
+}
+
+export const addLeaders = (leaders) => ({
+    type: ActionType.ADD_LEADERS,
+    payload: leaders
+})
+
+export const leadersFailed = (errMessage) => ({
+    type: ActionType.LEADERS_FAILED,
+    payload: errMessage
+})

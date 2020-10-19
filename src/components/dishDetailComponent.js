@@ -4,36 +4,46 @@ import {Card, CardTitle, CardText, CardImg, Breadcrumb, BreadcrumbItem } from 'r
 import { Link } from 'react-router-dom';
 import { Loading } from './loadingComponent'
 import { baseUrl } from '../shared/baseUrl'
+import { FadeTransform, Fade, Stagger } from 'react-animation-components'
 
 function RenderDish({dish}) {
     return (
         <div className="col-12 col-md-5 m-1">
+            <FadeTransform in
+                transformProps={{
+                    exitTransform: 'scale(0.5 translateY(-50%)'
+                }}>
             <Card>
                 <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
                 <CardTitle>{dish.name}</CardTitle>
                 <CardText>{dish.description}</CardText>
             </Card>
+            </FadeTransform>
         </div>
     )
 }
 
-function RenderComment({comments, addComment, dishId}) {
+function RenderComment({comments, postComment, dishId}) {
     if (comments != null) {
         const comment = comments.map((comment) => {
             return (
-                <li key={comment.id}>
-                    <p>{comment.comment}</p>
-                    <p>-- {comment.author}, { new Intl.DateTimeFormat('en-Us', { year:'numeric', month:'short', day:'2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
-                </li>
+                <Fade in>
+                    <li key={comment.id}>
+                        <p>{comment.comment}</p>
+                        <p>-- {comment.author}, { new Intl.DateTimeFormat('en-Us', { year:'numeric', month:'short', day:'2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
+                    </li>
+                </Fade>
             )
         })
         return(
             <div className="col-12 col-md-5 m-1">
                 <h4>Comments</h4>
                 <ul className="list-unstyled">
-                    {comment}
+                    <Stagger in >
+                        {comment}
+                    </Stagger>
                 </ul>
-                <CommentForm dishId={dishId} addComment={addComment} />
+                <CommentForm dishId={dishId} postComment={postComment} />
             </div>
         )
     } else {
@@ -77,7 +87,7 @@ function DishDetail(props) {
                 </div>
                 <div className="row">
                     <RenderDish dish={props.dish} />
-                    <RenderComment comments={props.comments} addComment={props.addComment} dishId={props.dish.id} />
+                    <RenderComment comments={props.comments} postComment={props.postComment} dishId={props.dish.id} />
                 </div>
             </div>
         )

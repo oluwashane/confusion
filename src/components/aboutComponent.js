@@ -1,6 +1,7 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { baseUrl } from '../shared/baseUrl'
 
 function RenderLeader(leaders) {
     console.log(leaders)
@@ -8,7 +9,7 @@ function RenderLeader(leaders) {
         return (
             <Media>
                 <Media left>
-                    <Media object src={leader.image} alt="leader image"/>
+                    <Media object src={baseUrl + leader.image} alt="leader image"/>
                 </Media>
                 <Media body className="pl-5 mb-5">
                     <Media heading>{leader.name}</Media>
